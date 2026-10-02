@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "homepage": "https://claudioflores77.github.io/modelonegocio-webapp",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
