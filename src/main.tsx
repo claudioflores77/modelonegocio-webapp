@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { App } from "./App";
@@ -11,5 +11,7 @@ root.render(
 );
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/src/service-worker.ts").catch(err => console.error("Service worker registration failed:", err));
+  navigator.serviceWorker
+    .register(new URL("./service-worker.ts", import.meta.url), { type: "module" })
+    .catch((err) => console.error("Service worker registration failed:", err));
 }

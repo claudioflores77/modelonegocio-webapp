@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import {
   Sparkles,
   LayoutGrid,
@@ -8,7 +8,7 @@ import {
   PlusCircle,
   CheckCircle2,
 } from "lucide-react";
-import { CanvasProject } from "../types/canvas";
+import type { CanvasProject } from "../types/canvas";
 import { exportCanvasToPDF, exportCanvasToPNG } from "../utils/exportCanvas";
 
 interface HeaderProps {
@@ -57,21 +57,27 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center bg-slate-100 p-1 rounded-xl">
             <button
               onClick={() => setActiveView('wizard')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                activeView === 'wizard' ? 'bg-white text-indigo-700 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
               <Compass className="w-4 h-4 text-indigo-600" />
               <span className="hidden sm:inline">Paso a paso</span>
             </button>
             <button
               onClick={() => setActiveView('board')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                activeView === 'board' ? 'bg-white text-indigo-700 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
               <LayoutGrid className="w-4 h-4 text-indigo-600" />
               <span>Canvas Visual</span>
             </button>
             <button
               onClick={() => setActiveView('radar')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                activeView === 'radar' ? 'bg-white text-indigo-700 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
               <Radar className="w-4 h-4 text-indigo-600" />
               <span className="hidden sm:inline">Radar & Experimentos</span>
