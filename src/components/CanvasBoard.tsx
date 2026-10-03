@@ -1,22 +1,10 @@
-﻿import React, { useState, useEffect } from 'react';
-import { CanvasProject, CanvasNote, CanvasBlockId, CertaintyLevel } from '../types/canvas';
+import React, { useState } from 'react';
+import type { CanvasProject, CanvasNote, CanvasBlockId, CertaintyLevel } from '../types/canvas';
 import { CANVAS_BLOCKS } from '../data/canvasBlocks';
 import { NoteCard } from './NoteCard';
 import {
   Plus,
   Search,
-  Filter,
-  Users,
-  Sparkles,
-  Send,
-  HeartHandshake,
-  CircleDollarSign,
-  KeyRound,
-  CheckSquare,
-  UsersRound,
-  Receipt,
-  Layers,
-  ListFilter,
   CheckCircle2,
   AlertTriangle,
   HelpCircle,

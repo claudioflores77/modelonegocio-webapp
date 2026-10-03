@@ -1,4 +1,4 @@
-﻿import { CanvasProject } from '../types/canvas';
+import type { CanvasProject } from '../types/canvas';
 
 export interface CoherenceAlert {
   id: string;
@@ -15,11 +15,8 @@ export function evaluateCoherence(project: CanvasProject): CoherenceAlert[] {
   const clientes = getNotes('segmentosClientes');
   const propuesta = getNotes('propuestaValor');
   const canales = getNotes('canales');
-  const relaciones = getNotes('relacionesClientes');
   const ingresos = getNotes('fuentesIngresos');
-  const recursos = getNotes('recursosClave');
   const actividades = getNotes('actividadesClave');
-  const socios = getNotes('sociosClave');
   const costos = getNotes('estructuraCostos');
 
   // 1. Clientes pero no propuesta
@@ -88,7 +85,7 @@ export function evaluateCoherence(project: CanvasProject): CoherenceAlert[] {
     alerts.push({
       id: 'muchas_hipotesis',
       tipo: 'info',
-      titulo: ${supuestos.length} Hipótesis por comprobar (Semáforo Amarillo),
+      titulo: `${supuestos.length} Hipótesis por comprobar (Semáforo Amarillo)`,
       mensaje: 'Tu modelo tiene buenas hipótesis. El siguiente paso es priorizar cuáles validar primero con experimentos.',
     });
   }

@@ -1,4 +1,4 @@
-﻿import { CanvasBlockId } from '../types/canvas';
+import type { CanvasBlockId } from '../types/canvas';
 
 export interface WizardStepData {
   stepIndex: number;
@@ -171,9 +171,9 @@ export const WIZARD_STEPS: WizardStepData[] = [
       {
         rubro: 'Servicios',
         ejemplos: [
-          'Oferta de Entrada: Auditoría express de perfil por \',
-          'Oferta Principal: Servicio completo mensual de gestión por \',
-          'Oferta Premium: Mentoría personalizada 1 a 1 por \'
+          'Oferta de Entrada: Auditoría express de perfil',
+          'Oferta Principal: Servicio completo mensual de gestión',
+          'Oferta Premium: Mentoría personalizada 1 a 1'
         ]
       },
       {

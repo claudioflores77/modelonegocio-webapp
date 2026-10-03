@@ -1,10 +1,10 @@
-﻿import React, { useState } from 'react';
-import { 
-  WIZARD_STEPS, 
+import React, { useState } from 'react';
+import type {
   WizardStepData 
 } from '../data/wizardSteps';
+import { WIZARD_STEPS } from '../data/wizardSteps';
 import { CANVAS_BLOCKS } from '../data/canvasBlocks';
-import { CanvasProject, CanvasNote, CertaintyLevel, CanvasBlockId } from '../types/canvas';
+import type { CanvasProject, CanvasNote, CertaintyLevel } from '../types/canvas';
 import { NoteCard } from './NoteCard';
 import { 
   ChevronRight, 
@@ -15,9 +15,7 @@ import {
   CheckCircle2, 
   Sparkles, 
   AlertCircle,
-  FlaskConical,
-  Compass,
-  ArrowRight
+  Compass
 } from 'lucide-react';
 
 interface GuidedWizardProps {
@@ -78,7 +76,7 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
   };
 
   const handleNoLoSeTodavia = () => {
-    handleAddNote(Pendiente por definir: , 'rojo');
+    handleAddNote('Pendiente por definir', 'rojo');
   };
 
   return (
@@ -109,7 +107,7 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
         <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden flex">
           <div 
             className="bg-gradient-to-r from-indigo-600 to-violet-600 h-full transition-all duration-300" 
-            style={{ width: ${progressPercent}% }}
+            style={{ width: `${progressPercent}%` }}
           />
         </div>
 
@@ -122,8 +120,14 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
               <button
                 key={s.stepIndex}
                 onClick={() => setCurrentStepIndex(idx)}
-                className={lex-1 min-w-[24px] h-2 rounded-full transition-all }
-                title={Paso : }
+                className={`flex-1 min-w-[24px] h-2 rounded-full transition-all ${
+                  isCurrent
+                    ? 'bg-indigo-600'
+                    : hasNotes
+                    ? 'bg-emerald-400 hover:bg-emerald-500'
+                    : 'bg-slate-200 hover:bg-slate-300'
+                }`}
+                title={`Paso ${s.stepIndex}: ${CANVAS_BLOCKS[s.blockId].tituloTecnico}`}
               />
             );
           })}
@@ -140,7 +144,7 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
             
             {/* Title & Central Question */}
             <div>
-              <span className={inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold  mb-3}>
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${blockMeta.colorBadge} mb-3`}>
                 {step.titulo}
               </span>
               <h1 className="text-xl font-bold text-slate-900 leading-snug">
@@ -227,21 +231,33 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
                     <button
                       type="button"
                       onClick={() => setSelectedCertainty('verde')}
-                      className={px-2.5 py-1 rounded-md text-xs font-medium transition-all }
+                      className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                        selectedCertainty === 'verde'
+                          ? 'bg-emerald-600 text-white shadow-2xs'
+                          : 'text-slate-600 hover:text-emerald-700'
+                      }`}
                     >
                       ✓ Validado
                     </button>
                     <button
                       type="button"
                       onClick={() => setSelectedCertainty('amarillo')}
-                      className={px-2.5 py-1 rounded-md text-xs font-medium transition-all }
+                      className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                        selectedCertainty === 'amarillo'
+                          ? 'bg-amber-500 text-white shadow-2xs'
+                          : 'text-slate-600 hover:text-amber-700'
+                      }`}
                     >
                       ! Hipótesis
                     </button>
                     <button
                       type="button"
                       onClick={() => setSelectedCertainty('rojo')}
-                      className={px-2.5 py-1 rounded-md text-xs font-medium transition-all }
+                      className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                        selectedCertainty === 'rojo'
+                          ? 'bg-rose-500 text-white shadow-2xs'
+                          : 'text-slate-600 hover:text-rose-700'
+                      }`}
                     >
                       ? Pendiente
                     </button>
@@ -321,7 +337,7 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
         {/* Right Column: Added Notes Preview for this Block */}
         <div className="lg:col-span-5 space-y-4">
           
-          <div className={p-5 rounded-2xl border   min-h-[420px]}>
+          <div className={`p-5 rounded-2xl border ${blockMeta.colorBg} ${blockMeta.colorBorder} min-h-[420px]`}>
             <div className="flex items-center justify-between mb-4 border-b pb-3 border-slate-200">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-slate-900 text-sm">

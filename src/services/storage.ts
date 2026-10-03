@@ -1,4 +1,4 @@
-﻿import { CanvasProject, CanvasNote } from '../types/canvas';
+import type { CanvasProject } from '../types/canvas';
 
 const STORAGE_KEY = 'canvas_projects_data_v1';
 const ACTIVE_PROJECT_KEY = 'canvas_active_project_id_v1';
@@ -68,7 +68,7 @@ export const DEMO_PROJECTS: CanvasProject[] = [
       {
         id: 'n6',
         bloque: 'fuentesIngresos',
-        texto: 'Oferta Principal: Programa intensivo de mentoría 1 a 1 por \',
+        texto: 'Oferta Principal: Programa intensivo de mentoría 1 a 1',
         estado: 'verde',
         etiquetas: ['oferta-principal'],
         orden: 1,
@@ -78,7 +78,7 @@ export const DEMO_PROJECTS: CanvasProject[] = [
       {
         id: 'n7',
         bloque: 'fuentesIngresos',
-        texto: 'Oferta de Entrada: Auditoría express de perfil e historias por \',
+        texto: 'Oferta de Entrada: Auditoría express de perfil e historias',
         estado: 'amarillo',
         etiquetas: ['pago-unico'],
         orden: 2,
@@ -118,7 +118,7 @@ export const DEMO_PROJECTS: CanvasProject[] = [
       {
         id: 'n11',
         bloque: 'estructuraCostos',
-        texto: 'Costos fijos: Licencia de Zoom Pro, Canva Pro e internet (\/mes)',
+        texto: 'Costos fijos: Licencia de Zoom Pro, Canva Pro e internet (/mes)',
         estado: 'verde',
         etiquetas: ['fijo'],
         orden: 1,
@@ -137,7 +137,7 @@ export const DEMO_PROJECTS: CanvasProject[] = [
       }
     ],
     planAccion: {
-      hipotesisCritica: 'Las emprendedoras comprarán la auditoría express de \ como paso previo a la mentoría',
+      hipotesisCritica: 'Las emprendedoras comprarán la auditoría express como paso previo a la mentoría',
       accionSemanal: 'Ofrecer 10 cupos promocionales por historias de Instagram y WhatsApp',
       fechaRevision: 'Próximo viernes',
       indicadorSimple: 'Conseguir al menos 4 compras o reservas abonadas'
@@ -217,7 +217,7 @@ export function duplicateProject(id: string): CanvasProject[] {
   const copy: CanvasProject = {
     ...target,
     id: newId,
-    nombreProyecto: ${target.nombreProyecto} (Copia),
+    nombreProyecto: `${target.nombreProyecto} (Copia)`,
     fechaCreacion: new Date().toISOString(),
     fechaActualizacion: new Date().toISOString(),
     notas: target.notas.map(n => ({
@@ -236,7 +236,7 @@ export function exportBackupJSON(projects: CanvasProject[]): void {
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(projects, null, 2));
   const downloadAnchor = document.createElement('a');
   downloadAnchor.setAttribute("href", dataStr);
-  downloadAnchor.setAttribute("download", espaldo_canvas_.json);
+  downloadAnchor.setAttribute("download", "respaldo_canvas.json");
   document.body.appendChild(downloadAnchor);
   downloadAnchor.click();
   downloadAnchor.remove();

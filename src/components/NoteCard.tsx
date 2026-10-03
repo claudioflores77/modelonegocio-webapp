@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   CheckCircle2, 
   HelpCircle, 
@@ -10,10 +10,9 @@ import {
   FlaskConical, 
   Tag, 
   Check, 
-  X,
   MoveRight
 } from 'lucide-react';
-import { CanvasNote, CertaintyLevel, CanvasBlockId } from '../types/canvas';
+import type { CanvasNote, CertaintyLevel, CanvasBlockId } from '../types/canvas';
 import { CANVAS_BLOCKS } from '../data/canvasBlocks';
 
 interface NoteCardProps {
@@ -95,7 +94,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
   };
 
   return (
-    <div className={p-3 rounded-xl border transition-all relative group }>
+    <div className={`p-3 rounded-xl border transition-all relative group ${getNoteBorderBg()}`}>
       
       {/* Top Header: Badge + Actions */}
       <div className="flex items-center justify-between mb-2 gap-2">
@@ -217,21 +216,33 @@ export const NoteCard: React.FC<NoteCardProps> = ({
         <div className="flex items-center gap-1 bg-slate-100/80 p-0.5 rounded-md">
           <button
             onClick={() => handleCertaintyChange('verde')}
-            className={px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors }
+            className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+              note.estado === 'verde'
+                ? 'bg-emerald-600 text-white'
+                : 'text-slate-600 hover:text-emerald-700'
+            }`}
             title="Marcado como datos comprobados o experiencia"
           >
             Validado
           </button>
           <button
             onClick={() => handleCertaintyChange('amarillo')}
-            className={px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors }
+            className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+              note.estado === 'amarillo'
+                ? 'bg-amber-500 text-white'
+                : 'text-slate-600 hover:text-amber-700'
+            }`}
             title="Hipótesis por comprobar"
           >
             Hipótesis
           </button>
           <button
             onClick={() => handleCertaintyChange('rojo')}
-            className={px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors }
+            className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+              note.estado === 'rojo'
+                ? 'bg-rose-500 text-white'
+                : 'text-slate-600 hover:text-rose-700'
+            }`}
             title="Respuesta pendiente"
           >
             Pendiente
