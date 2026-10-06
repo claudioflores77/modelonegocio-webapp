@@ -31,10 +31,10 @@ export const App: React.FC = () => {
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectDesc, setNewProjectDesc] = useState('');
 
-  // Toast / Feedback message state (Fase 2)
+  // Toast / Feedback message state
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-  // Dark Mode state (Fase 3)
+  // Dark Mode state
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('theme');
@@ -141,7 +141,6 @@ export const App: React.FC = () => {
   };
 
   const renderView = () => {
-    // Fase 1: Improved Initial Empty State
     if (!activeProject) return (
       <div className="p-12 text-center text-slate-500 dark:text-slate-400 space-y-4 max-w-xl mx-auto my-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md">
         <Sparkles className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
@@ -152,13 +151,13 @@ export const App: React.FC = () => {
         <div className="flex justify-center space-x-3 pt-2">
           <button
             onClick={() => setShowNewProjectModal(true)}
-            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs"
+            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             Crear Canvas
           </button>
           <button
             onClick={() => setView('wizard')}
-            className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-xl text-xs font-bold transition-colors border border-indigo-200 dark:border-indigo-800"
+            className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-xl text-xs font-bold transition-colors border border-indigo-200 dark:border-indigo-800 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             Ver ejemplo
           </button>
@@ -209,19 +208,20 @@ export const App: React.FC = () => {
         totalNotes={activeProject?.notas.length ?? 0}
         darkMode={darkMode}
         onToggleDarkMode={toggleDarkMode}
+        onShowToast={showToast}
       />
 
-      {/* Toast Feedback Notification Banner (Fase 2 & Fase 3) */}
+      {/* Toast Feedback Notification Banner */}
       {toastMessage && (
-        <div className="fixed top-20 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-bold shadow-lg border animate-in fade-in transition-all dark:bg-slate-900">
+        <div className="fixed top-20 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-bold shadow-lg border animate-in fade-in transition-all bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
           {toastMessage.type === 'success' ? (
-            <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800 p-3 rounded-xl">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-200">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
               <span>{toastMessage.text}</span>
             </div>
           ) : (
-            <div className="flex items-center gap-2 bg-rose-50 dark:bg-rose-950/80 text-rose-800 dark:text-rose-200 border-rose-200 dark:border-rose-800 p-3 rounded-xl">
-              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+            <div className="flex items-center gap-2 text-rose-800 dark:text-rose-200">
+              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 flex-shrink-0" />
               <span>{toastMessage.text}</span>
             </div>
           )}
@@ -243,12 +243,18 @@ export const App: React.FC = () => {
       {showProjectsModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800">
-            <div className="flex items-center justify-between border-b dark:border-slate-800 pb-3">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <FolderOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 Mis Proyectos Guardados ({projects.length})
               </h3>
-              <button onClick={() => setShowProjectsModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold">✕</button>
+              <button
+                onClick={() => setShowProjectsModal(false)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold p-1 rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
+                aria-label="Cerrar modal de proyectos"
+              >
+                ✕
+              </button>
             </div>
 
             <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
@@ -268,13 +274,12 @@ export const App: React.FC = () => {
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white">Activo</span>
                       )}
                     </div>
-                    {/* Fase 2: Improved Visual Hierarchy on Project Cards */}
-                    <p className="text-[10px] text-slate-400 dark:text-slate-400 truncate mt-0.5">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
                       {p.descripcionBreve || 'Sin descripción'}
                       {p.notas.length > 0 && (
                         <>
                           <span className="mx-1">•</span>
-                          <span className="text-slate-500 dark:text-slate-300 font-medium">
+                          <span className="text-slate-600 dark:text-slate-300 font-medium">
                             {p.notas.length} nota{p.notas.length > 1 ? 's' : ''}
                           </span>
                         </>
@@ -288,25 +293,27 @@ export const App: React.FC = () => {
                         onClick={() => {
                           setActiveProject(p);
                           setShowProjectsModal(false);
+                          showToast(`Proyecto '${p.nombreProyecto}' activado`);
                         }}
-                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors"
+                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
                       >
                         Seleccionar
                       </button>
                     )}
                     <button
                       onClick={() => handleDuplicateProject(p.id)}
-                      className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-lg transition-colors"
-                      title="Duplicar"
+                      className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-lg transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
+                      title="Duplicar proyecto"
+                      aria-label="Duplicar proyecto"
                     >
                       <Copy className="w-4 h-4" />
                     </button>
-                    {/* Fase 1: Improved Delete Button Contrast */}
                     {projects.length > 1 && (
                       <button
                         onClick={() => handleDeleteProject(p.id)}
-                        className="p-1.5 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg hover:border hover:border-rose-200 dark:hover:border-rose-800 transition-all"
-                        title="Eliminar"
+                        className="p-1.5 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg border border-transparent hover:border-rose-200 dark:hover:border-rose-800 transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-500"
+                        title="Eliminar proyecto"
+                        aria-label="Eliminar proyecto"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -316,20 +323,20 @@ export const App: React.FC = () => {
               ))}
             </div>
 
-            <div className="pt-2 flex justify-between items-center border-t dark:border-slate-800">
+            <div className="pt-2 flex justify-between items-center border-t border-slate-200 dark:border-slate-800">
               <button
                 onClick={() => {
                   setShowProjectsModal(false);
                   setShowNewProjectModal(true);
                 }}
-                className="px-4 py-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors border border-indigo-200 dark:border-indigo-800"
+                className="px-4 py-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors border border-indigo-200 dark:border-indigo-800 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
               >
                 <Plus className="w-4 h-4" />
                 Nuevo Proyecto
               </button>
               <button
                 onClick={() => setShowProjectsModal(false)}
-                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl transition-colors"
+                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
               >
                 Cerrar
               </button>
@@ -338,16 +345,22 @@ export const App: React.FC = () => {
         </div>
       )}
 
-      {/* New Project Modal (Fase 1: Associated Labels and IDs) */}
+      {/* New Project Modal */}
       {showNewProjectModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800">
-            <div className="flex items-center justify-between border-b dark:border-slate-800 pb-3">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 Crear un Nuevo Canvas
               </h3>
-              <button onClick={() => setShowNewProjectModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold">✕</button>
+              <button
+                onClick={() => setShowNewProjectModal(false)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold p-1 rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
+                aria-label="Cerrar modal nuevo proyecto"
+              >
+                ✕
+              </button>
             </div>
 
             <form onSubmit={handleCreateNewProject} className="space-y-4 text-xs">
@@ -361,7 +374,7 @@ export const App: React.FC = () => {
                   value={newProjectName}
                   onChange={e => setNewProjectName(e.target.value)}
                   placeholder="Ej: Cafetería de Especialidad Norte..."
-                  className="w-full p-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500"
+                  className="w-full p-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus-visible:outline-hidden"
                   required
                   autoFocus
                 />
@@ -377,22 +390,22 @@ export const App: React.FC = () => {
                   value={newProjectDesc}
                   onChange={e => setNewProjectDesc(e.target.value)}
                   placeholder="Ej: Servicio de viandas saludables para oficinas..."
-                  className="w-full p-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500"
+                  className="w-full p-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus-visible:outline-hidden"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t dark:border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowNewProjectModal(false)}
-                  className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-colors"
+                  className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={!newProjectName.trim()}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl disabled:opacity-50 transition-colors shadow-xs"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl disabled:opacity-50 transition-colors shadow-xs focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
                 >
                   Crear Canvas
                 </button>
