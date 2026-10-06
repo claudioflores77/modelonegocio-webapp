@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import type {
-  WizardStepData 
-} from '../data/wizardSteps';
+import type { WizardStepData } from '../data/wizardSteps';
 import { WIZARD_STEPS } from '../data/wizardSteps';
 import { CANVAS_BLOCKS } from '../data/canvasBlocks';
 import type { CanvasProject, CanvasNote, CertaintyLevel } from '../types/canvas';
@@ -15,7 +13,8 @@ import {
   CheckCircle2, 
   Sparkles, 
   AlertCircle,
-  Compass
+  Compass,
+  X
 } from 'lucide-react';
 
 interface GuidedWizardProps {
@@ -48,7 +47,7 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
     if (!textToAdd.trim()) return;
 
     const newNote: CanvasNote = {
-      id: 'note-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+      id: 'note-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
       bloque: step.blockId,
       texto: textToAdd.trim(),
       estado: statusOverride || selectedCertainty,
@@ -80,31 +79,31 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
       
       {/* Progress Header */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs mb-6">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs mb-6">
         <div className="flex items-center justify-between gap-4 mb-2">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 bg-indigo-50 text-indigo-700 rounded-lg">
+            <span className="p-1.5 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-lg">
               <Compass className="w-5 h-5" />
             </span>
             <div>
-              <h2 className="text-sm font-bold text-slate-900">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">
                 Paso {currentStepIndex + 1} de {WIZARD_STEPS.length}: {blockMeta.tituloTecnico}
               </h2>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {blockMeta.tituloEmprendedor}
               </p>
             </div>
           </div>
-          <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-100">
+          <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/80 px-2.5 py-1 rounded-full border border-indigo-100 dark:border-indigo-800">
             {progressPercent}% completado
           </span>
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden flex">
+        <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden flex">
           <div 
             className="bg-gradient-to-r from-indigo-600 to-violet-600 h-full transition-all duration-300" 
             style={{ width: `${progressPercent}%` }}
@@ -124,10 +123,11 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
                   isCurrent
                     ? 'bg-indigo-600'
                     : hasNotes
-                    ? 'bg-emerald-400 hover:bg-emerald-500'
-                    : 'bg-slate-200 hover:bg-slate-300'
+                    ? 'bg-emerald-400 dark:bg-emerald-500 hover:bg-emerald-500'
+                    : 'bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700'
                 }`}
                 title={`Paso ${s.stepIndex}: ${CANVAS_BLOCKS[s.blockId].tituloTecnico}`}
+                aria-label={`Ir al paso ${s.stepIndex}`}
               />
             );
           })}
@@ -140,31 +140,31 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
         {/* Left Column: Guided Questions & Input */}
         <div className="lg:col-span-7 space-y-6">
           
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-5">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-5">
             
             {/* Title & Central Question */}
             <div>
-              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${blockMeta.colorBadge} mb-3`}>
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${blockMeta.colorBadge} dark:bg-slate-800 dark:text-indigo-300 mb-3`}>
                 {step.titulo}
               </span>
-              <h1 className="text-xl font-bold text-slate-900 leading-snug">
+              <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug">
                 {step.preguntaCentral}
               </h1>
-              <p className="text-xs text-slate-600 mt-1">
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
                 {blockMeta.descripcionCorta}
               </p>
             </div>
 
             {/* Guided Secondary Questions */}
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1">
+            <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 space-y-2">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1">
                   <Lightbulb className="w-4 h-4 text-amber-500" />
                   Preguntas orientadoras
                 </span>
                 <button
                   onClick={() => setShowWhyItMatters(!showWhyItMatters)}
-                  className="text-xs text-indigo-600 hover:underline flex items-center gap-1"
+                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 focus-visible:outline-hidden"
                 >
                   <HelpCircle className="w-3.5 h-3.5" />
                   ¿Por qué importa esto?
@@ -172,12 +172,12 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
               </div>
 
               {showWhyItMatters && (
-                <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-lg text-xs text-indigo-900 mb-2 leading-relaxed">
+                <div className="p-3 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-800 rounded-lg text-xs text-indigo-900 dark:text-indigo-200 mb-2 leading-relaxed">
                   <strong>Propósito clave:</strong> {step.preguntaCentral} Cada bloque sostiene tu modelo de negocios. Si este bloque falla o queda difuso, todo el negocio tambalea.
                 </div>
               )}
 
-              <ul className="space-y-1.5 text-xs text-slate-700 list-disc list-inside pl-1">
+              <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300 list-disc list-inside pl-1">
                 {step.preguntasGuiadas.map((q, idx) => (
                   <li key={idx} className="leading-relaxed">
                     {q}
@@ -187,14 +187,14 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
             </div>
 
             {/* Dinámica sugerida */}
-            <div className="p-3.5 bg-gradient-to-r from-violet-50 to-indigo-50 rounded-xl border border-indigo-100">
+            <div className="p-3.5 bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-violet-950/40 dark:to-indigo-950/40 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
               <div className="flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-violet-600 mt-0.5 flex-shrink-0" />
+                <Sparkles className="w-4 h-4 text-violet-600 dark:text-violet-400 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h4 className="text-xs font-bold text-violet-900">
+                  <h4 className="text-xs font-bold text-violet-900 dark:text-violet-200">
                     Dinámica rápida: {step.dinamicaNombre}
                   </h4>
-                  <p className="text-xs text-violet-800 mt-0.5">
+                  <p className="text-xs text-violet-800 dark:text-violet-300 mt-0.5">
                     {step.dinamicaDescripcion}
                   </p>
                 </div>
@@ -203,15 +203,15 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
 
             {/* UX Alert if any */}
             {step.alertaUX && (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2 text-xs text-amber-900">
-                <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div className="p-3 bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 rounded-xl flex items-start gap-2 text-xs text-amber-900 dark:text-amber-200">
+                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                 <span>{step.alertaUX}</span>
               </div>
             )}
 
             {/* Form Input for New Note */}
             <div className="pt-2 space-y-3">
-              <label className="block text-xs font-bold text-slate-800">
+              <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
                 Escribí una idea corta o nota para este bloque:
               </label>
 
@@ -219,22 +219,22 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
                 value={newNoteText}
                 onChange={(e) => setNewNoteText(e.target.value)}
                 placeholder="Ejemplo: Emprendedoras que buscan vender sus servicios por redes sociales..."
-                className="w-full p-3 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+                className="w-full p-3 text-xs border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-visible:outline-hidden"
                 rows={3}
               />
 
               {/* Certainty level selector */}
-              <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-medium text-slate-600">Estado de certeza:</span>
-                  <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+              <div className="flex items-center justify-between flex-wrap gap-3 pt-1">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Estado:</span>
+                  <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700">
                     <button
                       type="button"
                       onClick={() => setSelectedCertainty('verde')}
-                      className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                      className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
                         selectedCertainty === 'verde'
                           ? 'bg-emerald-600 text-white shadow-2xs'
-                          : 'text-slate-600 hover:text-emerald-700'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400'
                       }`}
                     >
                       ✓ Validado
@@ -242,10 +242,10 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
                     <button
                       type="button"
                       onClick={() => setSelectedCertainty('amarillo')}
-                      className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                      className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
                         selectedCertainty === 'amarillo'
                           ? 'bg-amber-500 text-white shadow-2xs'
-                          : 'text-slate-600 hover:text-amber-700'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-amber-700 dark:hover:text-amber-400'
                       }`}
                     >
                       ! Hipótesis
@@ -253,10 +253,10 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
                     <button
                       type="button"
                       onClick={() => setSelectedCertainty('rojo')}
-                      className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                      className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
                         selectedCertainty === 'rojo'
                           ? 'bg-rose-500 text-white shadow-2xs'
-                          : 'text-slate-600 hover:text-rose-700'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-rose-700 dark:hover:text-rose-400'
                       }`}
                     >
                       ? Pendiente
@@ -268,20 +268,20 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowExamplesModal(true)}
-                    className="text-xs text-indigo-600 hover:text-indigo-800 font-medium px-2.5 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors flex items-center gap-1"
+                    className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-semibold px-2.5 py-1.5 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition-colors flex items-center gap-1 focus-visible:outline-hidden"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-                    Ver ejemplos por rubro
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
+                    Ejemplos
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleAddNote()}
                     disabled={!newNoteText.trim()}
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-1.5"
+                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-1.5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
                   >
                     <Plus className="w-4 h-4" />
-                    Agregar como nota
+                    Agregar
                   </button>
                 </div>
               </div>
@@ -291,7 +291,7 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
                 <button
                   type="button"
                   onClick={handleNoLoSeTodavia}
-                  className="text-xs text-slate-500 hover:text-slate-700 hover:underline inline-flex items-center gap-1"
+                  className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:underline inline-flex items-center gap-1 focus-visible:outline-hidden"
                 >
                   <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
                   No lo sé todavía (Marcar como pendiente)
@@ -307,7 +307,7 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
             <button
               onClick={() => setCurrentStepIndex(Math.max(0, currentStepIndex - 1))}
               disabled={currentStepIndex === 0}
-              className="px-4 py-2 border border-slate-300 hover:bg-slate-100 disabled:opacity-40 text-slate-700 text-xs font-medium rounded-xl flex items-center gap-1.5 transition-colors"
+              className="px-4 py-2 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
             >
               <ChevronLeft className="w-4 h-4" />
               Anterior paso
@@ -316,7 +316,7 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
             {currentStepIndex < WIZARD_STEPS.length - 1 ? (
               <button
                 onClick={() => setCurrentStepIndex(currentStepIndex + 1)}
-                className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs"
+                className="px-5 py-2 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
               >
                 Siguiente paso
                 <ChevronRight className="w-4 h-4" />
@@ -324,7 +324,7 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
             ) : (
               <button
                 onClick={onFinishWizard}
-                className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 transition-all shadow-md"
+                className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 transition-all shadow-md focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 ¡Ver Canvas Visual Completo!
@@ -337,13 +337,13 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
         {/* Right Column: Added Notes Preview for this Block */}
         <div className="lg:col-span-5 space-y-4">
           
-          <div className={`p-5 rounded-2xl border ${blockMeta.colorBg} ${blockMeta.colorBorder} min-h-[420px]`}>
-            <div className="flex items-center justify-between mb-4 border-b pb-3 border-slate-200">
+          <div className={`p-5 rounded-2xl border ${blockMeta.colorBg} ${blockMeta.colorBorder} dark:bg-slate-900/80 dark:border-slate-800 min-h-[420px]`}>
+            <div className="flex items-center justify-between mb-4 border-b pb-3 border-slate-200 dark:border-slate-800">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-slate-900 text-sm">
+                <span className="font-bold text-slate-900 dark:text-white text-sm">
                   Notas agregadas en este bloque
                 </span>
-                <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-white text-slate-700 border border-slate-200">
+                <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                   {currentBlockNotes.length}
                 </span>
               </div>
@@ -351,14 +351,14 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
 
             {currentBlockNotes.length === 0 ? (
               <div className="text-center py-12 px-4 space-y-3">
-                <div className="w-12 h-12 bg-white text-slate-400 rounded-full flex items-center justify-center mx-auto shadow-2xs border border-slate-200">
+                <div className="w-12 h-12 bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-500 rounded-full flex items-center justify-center mx-auto shadow-2xs border border-slate-200 dark:border-slate-700">
                   <Plus className="w-6 h-6" />
                 </div>
-                <p className="text-xs text-slate-600 font-medium">
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
                   Aún no agregaste notas para <strong>{blockMeta.tituloTecnico}</strong>.
                 </p>
-                <p className="text-[11px] text-slate-500">
-                  Respondé la pregunta de la izquierda y presioná "Agregar como nota" para ver tus tarjetas aquí.
+                <p className="text-[11px] text-slate-500 dark:text-slate-500">
+                  Respondé la pregunta de la izquierda y presioná "Agregar" para ver tus tarjetas aquí.
                 </p>
               </div>
             ) : (
@@ -384,38 +384,39 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
       {/* Rubro Examples Modal */}
       {showExamplesModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between border-b pb-3">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between border-b dark:border-slate-800 pb-3">
               <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-indigo-600" />
+                <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   Ejemplos por rubro para {blockMeta.tituloTecnico}
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   Inspirate con estos ejemplos y agregalos con un solo clic a tu Canvas.
                 </p>
               </div>
               <button
                 onClick={() => setShowExamplesModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+                aria-label="Cerrar modal ejemplos"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-4">
               {step.ejemplosPorRubro.map((rubroData, idx) => (
-                <div key={idx} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                  <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-wide">
+                <div key={idx} className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+                  <h4 className="text-xs font-bold text-indigo-900 dark:text-indigo-300 uppercase tracking-wide">
                     {rubroData.rubro}
                   </h4>
                   <div className="space-y-2">
                     {rubroData.ejemplos.map((ej, eIdx) => (
                       <div 
                         key={eIdx}
-                        className="p-2.5 bg-white rounded-lg border border-slate-200 flex items-center justify-between gap-3 hover:border-indigo-300 transition-colors"
+                        className="p-2.5 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 hover:border-indigo-300 dark:hover:border-indigo-600 transition-colors"
                       >
-                        <p className="text-xs text-slate-800">
+                        <p className="text-xs text-slate-800 dark:text-slate-200">
                           {ej}
                         </p>
                         <button
@@ -423,9 +424,9 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
                             handleAddNote(ej, 'verde');
                             setShowExamplesModal(false);
                           }}
-                          className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold flex items-center gap-1 flex-shrink-0"
+                          className="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-semibold flex items-center gap-1 flex-shrink-0 focus-visible:outline-hidden"
                         >
-                          Usar este ejemplo
+                          Usar ejemplo
                         </button>
                       </div>
                     ))}
@@ -437,7 +438,7 @@ export const GuidedWizard: React.FC<GuidedWizardProps> = ({
             <div className="pt-2 text-right">
               <button
                 onClick={() => setShowExamplesModal(false)}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl"
+                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl"
               >
                 Cerrar
               </button>

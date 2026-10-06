@@ -8,7 +8,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   HelpCircle,
-  Compass
+  Compass,
+  X
 } from 'lucide-react';
 
 interface CanvasBoardProps {
@@ -83,7 +84,7 @@ export const CanvasBoard: React.FC<CanvasBoardProps> = ({
     if (!addingNoteBlock || !quickNoteText.trim()) return;
     const blockNotes = project.notas.filter(n => n.bloque === addingNoteBlock);
     const newNote: CanvasNote = {
-      id: 'note-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+      id: 'note-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
       bloque: addingNoteBlock,
       texto: quickNoteText.trim(),
       estado: quickCertainty,
@@ -103,32 +104,40 @@ export const CanvasBoard: React.FC<CanvasBoardProps> = ({
     return (
       <div
         key={blockId}
-        className={`p-3 rounded-2xl border ${meta.colorBg} ${meta.colorBorder} ${minHeightClass} flex flex-col justify-between transition-all relative group`}
+        className={`p-3.5 rounded-2xl border ${meta.colorBg} ${meta.colorBorder} dark:bg-slate-900/80 dark:border-slate-800 ${minHeightClass} flex flex-col justify-between transition-all relative group shadow-2xs hover:shadow-xs`}
       >
         <div>
           <div className="flex items-center justify-between gap-1 mb-1.5">
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-xs font-bold text-slate-800 truncate">{meta.tituloTecnico}</span>
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">{meta.tituloTecnico}</span>
             </div>
             <div className="flex items-center gap-1">
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-white text-slate-700 border border-slate-200 shadow-2xs">{notes.length}</span>
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                {notes.length}
+              </span>
               <button
                 onClick={() => setAddingNoteBlock(blockId)}
-                className="p-1 bg-white hover:bg-indigo-50 text-indigo-700 rounded-lg border border-slate-200 shadow-2xs transition-colors"
+                className="p-1 bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 rounded-lg border border-slate-200 dark:border-slate-700 shadow-2xs transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
                 title={`Agregar nota a ${meta.tituloTecnico}`}
+                aria-label={`Agregar nota a ${meta.tituloTecnico}`}
               >
                 <Plus className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
-          <p className="text-[11px] text-slate-600 mb-3 italic">"{meta.tituloEmprendedor}"</p>
+          <p className="text-[11px] text-slate-600 dark:text-slate-400 mb-3 italic">"{meta.tituloEmprendedor}"</p>
           {notes.length === 0 ? (
-            <div className="text-center py-6 border border-dashed border-slate-300 rounded-xl bg-white/50">
-              <p className="text-[11px] text-slate-400 font-medium">Sin notas aún</p>
-              <button onClick={() => setAddingNoteBlock(blockId)} className="mt-1 text-[11px] text-indigo-600 hover:underline font-semibold">+ Agregar idea</button>
+            <div className="text-center py-6 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl bg-white/50 dark:bg-slate-800/30">
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Sin notas aún</p>
+              <button
+                onClick={() => setAddingNoteBlock(blockId)}
+                className="mt-1 text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-semibold focus-visible:outline-hidden"
+              >
+                + Agregar idea
+              </button>
             </div>
           ) : (
-            <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-[340px] overflow-y-auto pr-1">
               {notes.map(note => (
                 <NoteCard
                   key={note.id}
@@ -143,9 +152,14 @@ export const CanvasBoard: React.FC<CanvasBoardProps> = ({
             </div>
           )}
         </div>
-        <div className="mt-3 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[10px] text-slate-500">
+        <div className="mt-3 pt-2 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400">
           <span>{totalBlockNotes} notas totales</span>
-          <button onClick={onOpenWizard} className="text-indigo-600 font-semibold hover:underline">Editar con guía →</button>
+          <button
+            onClick={onOpenWizard}
+            className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline focus-visible:outline-hidden"
+          >
+            Editar con guía →
+          </button>
         </div>
       </div>
     );
@@ -153,43 +167,108 @@ export const CanvasBoard: React.FC<CanvasBoardProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-4 flex-wrap">
+      {/* Control Bar: Search & Certainty Filters */}
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3 flex-wrap flex-1 min-w-[280px]">
           <div className="relative flex-1 min-w-[180px]">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-2.5" />
             <input
               type="text"
               value={searchFilter}
               onChange={e => setSearchFilter(e.target.value)}
               placeholder="Buscar en notas..."
-              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:bg-white"
+              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 focus-visible:outline-hidden transition-colors"
             />
           </div>
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs">
-            <button onClick={() => setCertaintyFilter('todos')} className={`px-2.5 py-1 rounded-lg font-medium transition-all ${certaintyFilter === 'todos' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`}>Todas ({project.notas.length})</button>
-            <button onClick={() => setCertaintyFilter('verde')} className={`px-2.5 py-1 rounded-lg font-medium transition-all flex items-center gap-1 ${certaintyFilter === 'verde' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-slate-600 hover:text-emerald-700'}`}><CheckCircle2 className="w-3 h-3" /> Validadas</button>
-            <button onClick={() => setCertaintyFilter('amarillo')} className={`px-2.5 py-1 rounded-lg font-medium transition-all flex items-center gap-1 ${certaintyFilter === 'amarillo' ? 'bg-amber-500 text-white shadow-2xs' : 'text-slate-600 hover:text-amber-700'}`}><AlertTriangle className="w-3 h-3" /> Hipótesis</button>
-            <button onClick={() => setCertaintyFilter('rojo')} className={`px-2.5 py-1 rounded-lg font-medium transition-all flex items-center gap-1 ${certaintyFilter === 'rojo' ? 'bg-rose-500 text-white shadow-2xs' : 'text-slate-600 hover:text-rose-700'}`}><HelpCircle className="w-3 h-3" /> Pendientes</button>
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs flex-wrap gap-0.5">
+            <button
+              onClick={() => setCertaintyFilter('todos')}
+              className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+                certaintyFilter === 'todos'
+                  ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs font-bold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              Todas ({project.notas.length})
+            </button>
+            <button
+              onClick={() => setCertaintyFilter('verde')}
+              className={`px-2.5 py-1 rounded-lg font-medium transition-all flex items-center gap-1 ${
+                certaintyFilter === 'verde'
+                  ? 'bg-emerald-600 text-white shadow-2xs font-bold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400'
+              }`}
+            >
+              <CheckCircle2 className="w-3 h-3" /> Validadas
+            </button>
+            <button
+              onClick={() => setCertaintyFilter('amarillo')}
+              className={`px-2.5 py-1 rounded-lg font-medium transition-all flex items-center gap-1 ${
+                certaintyFilter === 'amarillo'
+                  ? 'bg-amber-500 text-white shadow-2xs font-bold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-amber-700 dark:hover:text-amber-400'
+              }`}
+            >
+              <AlertTriangle className="w-3 h-3" /> Hipótesis
+            </button>
+            <button
+              onClick={() => setCertaintyFilter('rojo')}
+              className={`px-2.5 py-1 rounded-lg font-medium transition-all flex items-center gap-1 ${
+                certaintyFilter === 'rojo'
+                  ? 'bg-rose-500 text-white shadow-2xs font-bold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-rose-700 dark:hover:text-rose-400'
+              }`}
+            >
+              <HelpCircle className="w-3 h-3" /> Pendientes
+            </button>
           </div>
         </div>
+
         <div className="flex items-center gap-2">
-          <div className="flex sm:hidden bg-slate-100 p-1 rounded-xl">
-            <button onClick={() => setMobileViewMode('grid')} className={`px-2 py-1 rounded-lg text-xs ${mobileViewMode === 'grid' ? 'bg-white font-bold' : 'text-slate-600'}`}>Grid</button>
-            <button onClick={() => setMobileViewMode('tabs')} className={`px-2 py-1 rounded-lg text-xs ${mobileViewMode === 'tabs' ? 'bg-white font-bold' : 'text-slate-600'}`}>Solapas</button>
-            <button onClick={() => setMobileViewMode('stacked')} className={`px-2 py-1 rounded-lg text-xs ${mobileViewMode === 'stacked' ? 'bg-white font-bold' : 'text-slate-600'}`}>Lista</button>
+          {/* Mobile view switchers */}
+          <div className="flex sm:hidden bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+            <button
+              onClick={() => setMobileViewMode('grid')}
+              className={`px-2 py-1 rounded-lg text-xs ${mobileViewMode === 'grid' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold' : 'text-slate-600 dark:text-slate-400'}`}
+            >
+              Grid
+            </button>
+            <button
+              onClick={() => setMobileViewMode('tabs')}
+              className={`px-2 py-1 rounded-lg text-xs ${mobileViewMode === 'tabs' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold' : 'text-slate-600 dark:text-slate-400'}`}
+            >
+              Solapas
+            </button>
+            <button
+              onClick={() => setMobileViewMode('stacked')}
+              className={`px-2 py-1 rounded-lg text-xs ${mobileViewMode === 'stacked' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold' : 'text-slate-600 dark:text-slate-400'}`}
+            >
+              Lista
+            </button>
           </div>
-          <button onClick={onOpenWizard} className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl border border-indigo-200 flex items-center gap-1.5 transition-colors"><Compass className="w-4 h-4" /> Asistente Guiado</button>
+
+          <button
+            onClick={onOpenWizard}
+            className="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs font-bold rounded-xl border border-indigo-200 dark:border-indigo-800 flex items-center gap-1.5 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
+          >
+            <Compass className="w-4 h-4" /> Asistente Guiado
+          </button>
         </div>
       </div>
 
+      {/* Mobile Tabs View */}
       {mobileViewMode === 'tabs' && (
         <div className="sm:hidden space-y-4">
-          <div className="flex overflow-x-auto gap-1 pb-2 scrollbar-none">
+          <div className="flex overflow-x-auto gap-1.5 pb-2 scrollbar-none">
             {Object.values(CANVAS_BLOCKS).map(b => (
               <button
                 key={b.id}
                 onClick={() => setActiveTabBlock(b.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${activeTabBlock === b.id ? `${b.colorBg} ${b.colorBadge} shadow-xs border` : 'bg-white text-slate-600 border border-slate-200'}`}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                  activeTabBlock === b.id
+                    ? `${b.colorBg} ${b.colorBadge} shadow-xs border dark:bg-slate-800 dark:text-indigo-300`
+                    : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800'
+                }`}
               >
                 {b.tituloTecnico}
               </button>
@@ -199,6 +278,7 @@ export const CanvasBoard: React.FC<CanvasBoardProps> = ({
         </div>
       )}
 
+      {/* Grid Canvas View */}
       {(mobileViewMode === 'grid' || mobileViewMode === 'stacked') && (
         <div className={`space-y-4 ${mobileViewMode === 'stacked' ? 'block' : ''}`} id="canvas-printable-area">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -221,32 +301,86 @@ export const CanvasBoard: React.FC<CanvasBoardProps> = ({
         </div>
       )}
 
+      {/* Add Quick Note Modal */}
       {addingNoteBlock && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between border-b pb-2">
-              <h3 className="text-sm font-bold text-slate-900">Agregar nota a {CANVAS_BLOCKS[addingNoteBlock].tituloTecnico}</h3>
-              <button onClick={() => setAddingNoteBlock(null)} className="text-slate-400 hover:text-slate-600 text-xs font-bold">✕</button>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                Agregar nota a {CANVAS_BLOCKS[addingNoteBlock].tituloTecnico}
+              </h3>
+              <button
+                onClick={() => setAddingNoteBlock(null)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold p-1 rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
+                aria-label="Cerrar modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
             <textarea
               value={quickNoteText}
               onChange={e => setQuickNoteText(e.target.value)}
               placeholder="Escribí tu nota o idea corta..."
-              className="w-full p-3 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white"
+              className="w-full p-3 text-xs border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus-visible:outline-hidden"
               rows={3}
               autoFocus
             />
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Estado de certeza:</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Estado de certeza:
+              </label>
               <div className="flex items-center gap-2">
-                <button type="button" onClick={() => setQuickCertainty('verde')} className={`flex-1 py-1.5 rounded-lg text-xs font-medium border ${quickCertainty === 'verde' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-50 text-slate-700 border-slate-200'}`}>✓ Validado</button>
-                <button type="button" onClick={() => setQuickCertainty('amarillo')} className={`flex-1 py-1.5 rounded-lg text-xs font-medium border ${quickCertainty === 'amarillo' ? 'bg-amber-500 text-white border-amber-500' : 'bg-slate-50 text-slate-700 border-slate-200'}`}>! Hipótesis</button>
-                <button type="button" onClick={() => setQuickCertainty('rojo')} className={`flex-1 py-1.5 rounded-lg text-xs font-medium border ${quickCertainty === 'rojo' ? 'bg-rose-500 text-white border-rose-500' : 'bg-slate-50 text-slate-700 border-slate-200'}`}>? Pendiente</button>
+                <button
+                  type="button"
+                  onClick={() => setQuickCertainty('verde')}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                    quickCertainty === 'verde'
+                      ? 'bg-emerald-600 text-white border-emerald-600'
+                      : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                  }`}
+                >
+                  ✓ Validado
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setQuickCertainty('amarillo')}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                    quickCertainty === 'amarillo'
+                      ? 'bg-amber-500 text-white border-amber-500'
+                      : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                  }`}
+                >
+                  ! Hipótesis
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setQuickCertainty('rojo')}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                    quickCertainty === 'rojo'
+                      ? 'bg-rose-500 text-white border-rose-500'
+                      : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                  }`}
+                >
+                  ? Pendiente
+                </button>
               </div>
             </div>
-            <div className="flex items-center justify-end gap-2 pt-2">
-              <button type="button" onClick={() => setAddingNoteBlock(null)} className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
-              <button type="button" onClick={handleAddQuickNote} disabled={!quickNoteText.trim()} className="px-4 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg disabled:opacity-50 hover:bg-indigo-700">Guardar Nota</button>
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <button
+                type="button"
+                onClick={() => setAddingNoteBlock(null)}
+                className="px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleAddQuickNote}
+                disabled={!quickNoteText.trim()}
+                className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg disabled:opacity-50 transition-colors shadow-xs focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500"
+              >
+                Guardar Nota
+              </button>
             </div>
           </div>
         </div>
