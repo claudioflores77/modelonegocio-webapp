@@ -13,7 +13,7 @@ import {
   duplicateProject
 } from './services/storage';
 import { ExperimentModal } from './components/ExperimentModal';
-import { Plus, Trash2, Copy, FolderOpen, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Copy, FolderOpen, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [projects, setProjects] = useState<CanvasProject[]>(() => getStoredProjects());
@@ -30,6 +30,40 @@ export const App: React.FC = () => {
   // New project form state
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectDesc, setNewProjectDesc] = useState('');
+
+  // Toast / Feedback message state (Fase 2)
+  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+  // Dark Mode state (Fase 3)
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('theme');
+      if (saved) return saved === 'dark';
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(prev => !prev);
+  };
+
+  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+    setToastMessage({ text, type });
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+  };
 
   useEffect(() => {
     if (activeProject) {
@@ -66,6 +100,7 @@ export const App: React.FC = () => {
     setNewProjectName('');
     setNewProjectDesc('');
     setShowNewProjectModal(false);
+    showToast('Nuevo Canvas creado exitosamente');
   };
 
   const handleDeleteProject = (id: string) => {
@@ -75,6 +110,7 @@ export const App: React.FC = () => {
       const activeId = getActiveProjectId();
       const nextActive = remaining.find(p => p.id === activeId) || remaining[0] || null;
       setActiveProject(nextActive);
+      showToast('Proyecto eliminado exitosamente', 'error');
     }
   };
 
@@ -84,6 +120,7 @@ export const App: React.FC = () => {
     const activeId = getActiveProjectId();
     const nextActive = updated.find(p => p.id === activeId) || updated[0] || null;
     setActiveProject(nextActive);
+    showToast('Proyecto duplicado exitosamente');
   };
 
   const openExperiment = (note: CanvasNote) => {
@@ -100,18 +137,32 @@ export const App: React.FC = () => {
     const updatedProj = { ...activeProject, notas: updatedNotes };
     updateProject(updatedProj);
     closeExperiment();
+    showToast('Experimento guardado exitosamente');
   };
 
   const renderView = () => {
+    // Fase 1: Improved Initial Empty State
     if (!activeProject) return (
-      <div className="p-12 text-center text-slate-500">
-        <p className="text-sm font-semibold mb-3">No hay ningún proyecto activo.</p>
-        <button
-          onClick={() => setShowNewProjectModal(true)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold"
-        >
-          Crear un Canvas
-        </button>
+      <div className="p-12 text-center text-slate-500 dark:text-slate-400 space-y-4 max-w-xl mx-auto my-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md">
+        <Sparkles className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+        <p className="text-base font-bold text-slate-900 dark:text-white">Comienza tu primer modelo de negocio</p>
+        <p className="text-xs text-slate-600 dark:text-slate-300 max-w-md mx-auto leading-relaxed">
+          Usa el wizard guiado para definir tu propuesta de valor, clientes y más en 5 minutos.
+        </p>
+        <div className="flex justify-center space-x-3 pt-2">
+          <button
+            onClick={() => setShowNewProjectModal(true)}
+            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs"
+          >
+            Crear Canvas
+          </button>
+          <button
+            onClick={() => setView('wizard')}
+            className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-xl text-xs font-bold transition-colors border border-indigo-200 dark:border-indigo-800"
+          >
+            Ver ejemplo
+          </button>
+        </div>
       </div>
     );
 
@@ -148,7 +199,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
       <Header
         activeProject={activeProject}
         activeView={view}
@@ -156,7 +207,26 @@ export const App: React.FC = () => {
         onOpenProjects={() => setShowProjectsModal(true)}
         onNewProject={() => setShowNewProjectModal(true)}
         totalNotes={activeProject?.notas.length ?? 0}
+        darkMode={darkMode}
+        onToggleDarkMode={toggleDarkMode}
       />
+
+      {/* Toast Feedback Notification Banner (Fase 2 & Fase 3) */}
+      {toastMessage && (
+        <div className="fixed top-20 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-bold shadow-lg border animate-in fade-in transition-all dark:bg-slate-900">
+          {toastMessage.type === 'success' ? (
+            <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800 p-3 rounded-xl">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span>{toastMessage.text}</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 bg-rose-50 dark:bg-rose-950/80 text-rose-800 dark:text-rose-200 border-rose-200 dark:border-rose-800 p-3 rounded-xl">
+              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+              <span>{toastMessage.text}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       <main className="flex-1 overflow-y-auto">{renderView()}</main>
 
@@ -172,13 +242,13 @@ export const App: React.FC = () => {
       {/* Projects List Modal */}
       {showProjectsModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <FolderOpen className="w-5 h-5 text-indigo-600" />
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between border-b dark:border-slate-800 pb-3">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <FolderOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 Mis Proyectos Guardados ({projects.length})
               </h3>
-              <button onClick={() => setShowProjectsModal(false)} className="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+              <button onClick={() => setShowProjectsModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold">✕</button>
             </div>
 
             <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
@@ -187,18 +257,29 @@ export const App: React.FC = () => {
                   key={p.id}
                   className={`p-3.5 rounded-xl border flex items-center justify-between gap-3 transition-all ${
                     activeProject?.id === p.id
-                      ? 'bg-indigo-50/70 border-indigo-300'
-                      : 'bg-white border-slate-200 hover:border-slate-300'
+                      ? 'bg-indigo-50/70 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-700'
+                      : 'bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
                   }`}
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <h4 className="font-bold text-xs text-slate-900 truncate">{p.nombreProyecto}</h4>
+                      <h4 className="font-bold text-xs text-slate-900 dark:text-white truncate">{p.nombreProyecto}</h4>
                       {activeProject?.id === p.id && (
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white">Activo</span>
                       )}
                     </div>
-                    <p className="text-[11px] text-slate-500 truncate mt-0.5">{p.descripcionBreve || 'Sin descripción'} • {p.notas.length} notas</p>
+                    {/* Fase 2: Improved Visual Hierarchy on Project Cards */}
+                    <p className="text-[10px] text-slate-400 dark:text-slate-400 truncate mt-0.5">
+                      {p.descripcionBreve || 'Sin descripción'}
+                      {p.notas.length > 0 && (
+                        <>
+                          <span className="mx-1">•</span>
+                          <span className="text-slate-500 dark:text-slate-300 font-medium">
+                            {p.notas.length} nota{p.notas.length > 1 ? 's' : ''}
+                          </span>
+                        </>
+                      )}
+                    </p>
                   </div>
 
                   <div className="flex items-center gap-1">
@@ -208,22 +289,23 @@ export const App: React.FC = () => {
                           setActiveProject(p);
                           setShowProjectsModal(false);
                         }}
-                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg"
+                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors"
                       >
                         Seleccionar
                       </button>
                     )}
                     <button
                       onClick={() => handleDuplicateProject(p.id)}
-                      className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg"
+                      className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-lg transition-colors"
                       title="Duplicar"
                     >
                       <Copy className="w-4 h-4" />
                     </button>
+                    {/* Fase 1: Improved Delete Button Contrast */}
                     {projects.length > 1 && (
                       <button
                         onClick={() => handleDeleteProject(p.id)}
-                        className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg"
+                        className="p-1.5 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg hover:border hover:border-rose-200 dark:hover:border-rose-800 transition-all"
                         title="Eliminar"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -234,20 +316,20 @@ export const App: React.FC = () => {
               ))}
             </div>
 
-            <div className="pt-2 flex justify-between items-center border-t">
+            <div className="pt-2 flex justify-between items-center border-t dark:border-slate-800">
               <button
                 onClick={() => {
                   setShowProjectsModal(false);
                   setShowNewProjectModal(true);
                 }}
-                className="px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold text-xs rounded-xl flex items-center gap-1.5"
+                className="px-4 py-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors border border-indigo-200 dark:border-indigo-800"
               >
                 <Plus className="w-4 h-4" />
                 Nuevo Proyecto
               </button>
               <button
                 onClick={() => setShowProjectsModal(false)}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl"
+                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl transition-colors"
               >
                 Cerrar
               </button>
@@ -256,55 +338,61 @@ export const App: React.FC = () => {
         </div>
       )}
 
-      {/* New Project Modal */}
+      {/* New Project Modal (Fase 1: Associated Labels and IDs) */}
       {showNewProjectModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-indigo-600" />
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between border-b dark:border-slate-800 pb-3">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 Crear un Nuevo Canvas
               </h3>
-              <button onClick={() => setShowNewProjectModal(false)} className="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+              <button onClick={() => setShowNewProjectModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold">✕</button>
             </div>
 
             <form onSubmit={handleCreateNewProject} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Nombre del Proyecto / Negocio:</label>
+                <label htmlFor="project-name" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Nombre del Proyecto / Negocio:
+                </label>
                 <input
+                  id="project-name"
                   type="text"
                   value={newProjectName}
                   onChange={e => setNewProjectName(e.target.value)}
                   placeholder="Ej: Cafetería de Especialidad Norte..."
-                  className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                  className="w-full p-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500"
                   required
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Descripción breve (opcional):</label>
+                <label htmlFor="project-desc" className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Descripción breve (opcional):
+                </label>
                 <input
+                  id="project-desc"
                   type="text"
                   value={newProjectDesc}
                   onChange={e => setNewProjectDesc(e.target.value)}
                   placeholder="Ej: Servicio de viandas saludables para oficinas..."
-                  className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                  className="w-full p-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowNewProjectModal(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl"
+                  className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={!newProjectName.trim()}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl disabled:opacity-50"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl disabled:opacity-50 transition-colors shadow-xs"
                 >
                   Crear Canvas
                 </button>
