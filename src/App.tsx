@@ -23,6 +23,7 @@ export const App: React.FC = () => {
     return loaded.find(p => p.id === activeId) || loaded[0] || null;
   });
   const [view, setView] = useState<'wizard' | 'board' | 'radar'>('board');
+  const [mobileViewMode, setMobileViewMode] = useState<'grid' | 'stacked' | 'tabs'>('grid');
   const [experimentNote, setExperimentNote] = useState<null | CanvasNote>(null);
   const [showProjectsModal, setShowProjectsModal] = useState(false);
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
@@ -203,6 +204,8 @@ export const App: React.FC = () => {
         activeProject={activeProject}
         activeView={view}
         setActiveView={setView}
+        mobileViewMode={mobileViewMode}
+        setMobileViewMode={setMobileViewMode}
         onOpenProjects={() => setShowProjectsModal(true)}
         onNewProject={() => setShowNewProjectModal(true)}
         totalNotes={activeProject?.notas.length ?? 0}

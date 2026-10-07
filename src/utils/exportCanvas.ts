@@ -2,7 +2,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 export const exportCanvasToPNG = async (): Promise<boolean> => {
-  const element = document.getElementById('canvas-printable-area');
+  const element = await waitForElement('canvas-printable-area', 2000);
   if (!element) {
     return false;
   }
@@ -28,7 +28,7 @@ export const exportCanvasToPNG = async (): Promise<boolean> => {
 };
 
 export const exportCanvasToPDF = async (): Promise<boolean> => {
-  const element = document.getElementById('canvas-printable-area');
+  const element = await waitForElement('canvas-printable-area', 2000);
   if (!element) {
     return false;
   }
@@ -72,3 +72,15 @@ export const exportCanvasToPDF = async (): Promise<boolean> => {
     return false;
   }
 };
+
+async function waitForElement(elementId: string, timeoutMs = 2000): Promise<HTMLElement | null> {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    const element = document.getElementById(elementId);
+    if (element) {
+      return element;
+    }
+    await new Promise(resolve => setTimeout(resolve, 50));
+  }
+  return null;
+}

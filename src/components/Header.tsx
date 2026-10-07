@@ -20,6 +20,8 @@ interface HeaderProps {
   activeProject: CanvasProject | null;
   activeView: "wizard" | "board" | "radar";
   setActiveView: (view: "wizard" | "board" | "radar") => void;
+  mobileViewMode: 'grid' | 'stacked' | 'tabs';
+  setMobileViewMode: (mode: 'grid' | 'stacked' | 'tabs') => void;
   onOpenProjects: () => void;
   onNewProject: () => void;
   totalNotes: number;
