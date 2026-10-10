@@ -10,8 +10,10 @@ root.render(
   </React.StrictMode>
 );
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register(new URL("./service-worker.ts", import.meta.url), { type: "module" })
-    .catch((err) => console.error("Service worker registration failed:", err));
+if ("serviceWorker" in navigator && import.meta.env.PROD) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register(`${import.meta.env.BASE_URL}sw.js`)
+      .catch((err) => console.error("Service worker registration failed:", err));
+  });
 }

@@ -1,22 +1,42 @@
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 
-export const exportCanvasToPNG = async (): Promise<boolean> => {
-  const element = await waitForElement('canvas-printable-area', 2000);
+const sanitizeFilename = (name?: string): string => {
+  if (!name || !name.trim()) return 'modelo-negocio';
+  return name
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
+
+export const exportCanvasToPNG = async (projectName?: string): Promise<boolean> => {
+  const element = await waitForElement('canvas-printable-area', 2500);
   if (!element) {
     return false;
   }
+
+  const wasDark = document.documentElement.classList.contains('dark');
+  if (wasDark) {
+    document.documentElement.classList.remove('dark');
+  }
+
   try {
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
+    // Wait brief frame for CSS repaint to light mode if dark mode was active
+    await new Promise((resolve) => setTimeout(resolve, 120));
+
+    const imgData = await toPng(element, {
+      pixelRatio: 2,
       backgroundColor: '#ffffff',
-      logging: false,
+      cacheBust: true,
     });
-    const imgData = canvas.toDataURL('image/png');
+
+    const safeName = sanitizeFilename(projectName);
     const link = document.createElement('a');
     link.href = imgData;
-    link.download = `canvas-modelo-negocio-${Date.now()}.png`;
+    link.download = `canvas-${safeName}-${Date.now()}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -24,22 +44,34 @@ export const exportCanvasToPNG = async (): Promise<boolean> => {
   } catch (err) {
     console.error('Error al exportar PNG:', err);
     return false;
+  } finally {
+    if (wasDark) {
+      document.documentElement.classList.add('dark');
+    }
   }
 };
 
-export const exportCanvasToPDF = async (): Promise<boolean> => {
-  const element = await waitForElement('canvas-printable-area', 2000);
+export const exportCanvasToPDF = async (projectName?: string): Promise<boolean> => {
+  const element = await waitForElement('canvas-printable-area', 2500);
   if (!element) {
     return false;
   }
+
+  const wasDark = document.documentElement.classList.contains('dark');
+  if (wasDark) {
+    document.documentElement.classList.remove('dark');
+  }
+
   try {
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
+    // Wait brief frame for CSS repaint to light mode if dark mode was active
+    await new Promise((resolve) => setTimeout(resolve, 120));
+
+    const imgData = await toPng(element, {
+      pixelRatio: 2,
       backgroundColor: '#ffffff',
-      logging: false,
+      cacheBust: true,
     });
-    const imgData = canvas.toDataURL('image/png');
+
     // A4 Landscape: 297mm x 210mm
     const pdf = new jsPDF('l', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -65,22 +97,27 @@ export const exportCanvasToPDF = async (): Promise<boolean> => {
     const posY = margin + (availHeight - renderHeight) / 2;
 
     pdf.addImage(imgData, 'PNG', posX, posY, renderWidth, renderHeight);
-    pdf.save(`canvas-modelo-negocio-${Date.now()}.pdf`);
+    const safeName = sanitizeFilename(projectName);
+    pdf.save(`canvas-${safeName}-${Date.now()}.pdf`);
     return true;
   } catch (err) {
     console.error('Error al exportar PDF:', err);
     return false;
+  } finally {
+    if (wasDark) {
+      document.documentElement.classList.add('dark');
+    }
   }
 };
 
-async function waitForElement(elementId: string, timeoutMs = 2000): Promise<HTMLElement | null> {
+async function waitForElement(elementId: string, timeoutMs = 2500): Promise<HTMLElement | null> {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     const element = document.getElementById(elementId);
     if (element) {
       return element;
     }
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
   }
   return null;
 }
