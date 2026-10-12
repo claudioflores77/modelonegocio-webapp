@@ -51,7 +51,7 @@ export const Header: React.FC<HeaderProps> = ({
       await new Promise((resolve) => setTimeout(resolve, 150));
     }
     setIsExportingPDF(true);
-    const success = await exportCanvasToPDF();
+    const success = await exportCanvasToPDF(activeProject?.nombreProyecto);
     setIsExportingPDF(false);
     if (success) {
       onShowToast?.("Canvas exportado a PDF correctamente", "success");
@@ -67,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
       await new Promise((resolve) => setTimeout(resolve, 150));
     }
     setIsExportingPNG(true);
-    const success = await exportCanvasToPNG();
+    const success = await exportCanvasToPNG(activeProject?.nombreProyecto);
     setIsExportingPNG(false);
     if (success) {
       onShowToast?.("Imagen PNG descargada correctamente", "success");
